@@ -16,8 +16,7 @@ Một ứng dụng web hiện đại được xây dựng với **Nuxt 3** và *
 ## 📋 Định dạng JSONL hỗ trợ
 
 ```json
-{"timestamp": "2024-01-15T10:30:00Z", "messages": [{"role": "system", "content": "You are helpful"}, {"role": "user", "content": "Hello"}]}
-{"timestamp": "2024-01-15T10:31:00Z", "messages": [{"role": "assistant", "content": "Hi there!"}]}
+{"timestamp": "2026-02-02T03:47:36.096608", "messages": [{"role": "system", "content": "You are helpful"}, {"role": "user", "content": "Hello"}, {"role": "assistant", "content": "Hi there!"}]}
 ```
 
 ## 🚀 Cài đặt
