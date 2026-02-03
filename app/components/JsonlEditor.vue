@@ -2,8 +2,24 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
     <!-- Top Navigation Bar -->
     <div class="bg-white border-b border-slate-200 sticky top-0 z-10">
-      <div class="max-w-7xl mx-auto px-6 py-4">
-        <div class="flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
+        <!-- Mobile: Back Button + File Name -->
+        <div class="sm:hidden mb-3 flex items-center justify-between gap-2">
+          <button
+            @click="goBack"
+            class="flex items-center px-2 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 transition-colors font-medium text-xs flex-shrink-0"
+            title="Quay lại"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h1 class="text-sm font-bold text-slate-800 truncate flex-1 px-2" :title="fileName">{{ displayFileName }}</h1>
+          <div class="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded flex-shrink-0">{{ currentIndex + 1 }}/{{ records.length }}</div>
+        </div>
+
+        <!-- Desktop: Full Navigation -->
+        <div class="hidden sm:flex items-center justify-between">
           <!-- Back Button -->
           <button
             @click="goBack"
@@ -17,46 +33,47 @@
 
           <!-- File Name & Status -->
           <div class="flex-1 ml-6">
-            <h1 class="text-2xl font-bold text-slate-800">{{ fileName }}</h1>
+            <h1 class="text-2xl font-bold text-slate-800" :title="fileName">{{ displayFileName }}</h1>
             <p class="text-sm text-slate-600">
               <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">✓ Có thể đọc được</span>
             </p>
           </div>
 
           <!-- Navigation Controls -->
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3 lg:gap-4">
             <!-- Previous Button -->
             <button
               @click="goToPrevious"
               :disabled="currentIndex <= 0"
-              class="flex items-center gap-2 px-4 py-2 bg-slate-300 text-slate-800 rounded-lg hover:bg-slate-400 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+              class="hidden sm:flex items-center gap-2 px-3 lg:px-4 py-2 bg-slate-300 text-slate-800 rounded-lg hover:bg-slate-400 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm lg:text-base"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
-              Trước
+              <span class="hidden lg:inline">Trước</span>
             </button>
 
             <!-- Page Indicator -->
-            <div class="flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-lg">
+            <div class="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 lg:px-4 py-2 bg-slate-100 rounded-lg">
               <input
                 v-model.number="jumpToIndex"
                 type="number"
                 :min="1"
                 :max="records.length"
-                class="w-12 px-2 py-1 text-center font-semibold text-slate-800 bg-white border border-slate-300 rounded"
+                class="w-10 sm:w-12 px-1 sm:px-2 py-1 text-center font-semibold text-slate-800 bg-white border border-slate-300 rounded text-xs sm:text-sm"
               />
-              <span class="text-slate-600 font-medium">/ {{ records.length }}</span>
+              <span class="text-slate-600 font-medium text-xs sm:text-sm hidden sm:inline">/</span>
+              <span class="text-slate-600 font-medium text-xs sm:text-sm hidden sm:inline">{{ records.length }}</span>
             </div>
 
             <!-- Next Button -->
             <button
               @click="goToNext"
               :disabled="currentIndex >= records.length - 1"
-              class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+              class="hidden sm:flex items-center gap-2 px-3 lg:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm lg:text-base"
             >
-              Sau
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <span class="hidden lg:inline">Sau</span>
+              <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -64,63 +81,93 @@
             <!-- Download Button -->
             <button
               @click="downloadFile"
-              class="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+              class="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 lg:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors text-xs sm:text-sm lg:text-base"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              Lưu thay đổi
+              <span class="hidden lg:inline">Lưu thay đổi</span>
             </button>
           </div>
+        </div>
+
+        <!-- Mobile Navigation Controls -->
+        <div class="sm:hidden flex items-center justify-between gap-2 mt-2">
+          <button
+            @click="goToPrevious"
+            :disabled="currentIndex <= 0"
+            class="flex-1 flex items-center justify-center px-2 py-2 bg-slate-300 text-slate-800 rounded text-xs font-medium hover:bg-slate-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            @click="goToNext"
+            :disabled="currentIndex >= records.length - 1"
+            class="flex-1 flex items-center justify-center px-2 py-2 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <button
+            @click="downloadFile"
+            class="flex-1 flex items-center justify-center px-2 py-2 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-6 py-8">
-      <div v-if="currentRecord" class="grid grid-cols-3 gap-6">
-        <!-- Messages Editor (Left + Center) -->
-        <div class="col-span-2">
-          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-            <h2 class="text-2xl font-bold text-slate-800 mb-6">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
+      <div v-if="currentRecord" class="grid grid-cols-1 gap-4 sm:gap-6">
+        <!-- Messages Editor (Full Width) -->
+        <div class="col-span-1">
+          <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-4 sm:mb-6">
               Dòng {{ currentIndex + 1 }} / {{ records.length }}
             </h2>
 
             <!-- Messages List -->
-            <div class="space-y-4 max-h-[calc(100vh-400px)] overflow-y-auto pr-4">
-              <div v-if="!currentRecord.messages || currentRecord.messages.length === 0" class="text-center py-12">
-                <p class="text-slate-600 text-lg">Không có messages. Nhấp "Thêm Message" để bắt đầu.</p>
+            <div class="space-y-3 sm:space-y-4">
+              <div v-if="!currentRecord.messages || currentRecord.messages.length === 0" class="text-center py-8 sm:py-12">
+                <p class="text-slate-600 text-sm sm:text-lg">Không có messages. Nhấp "Thêm Message" để bắt đầu.</p>
               </div>
 
               <template v-else>
                 <div
                   v-for="(message, index) in currentRecord.messages"
                   :key="message.id"
-                  class="border-2 border-slate-200 rounded-lg p-5 bg-gradient-to-br from-slate-50 to-white hover:border-slate-300 transition-colors"
+                  class="border-2 border-slate-200 rounded-lg p-3 sm:p-5 bg-gradient-to-br from-slate-50 to-white hover:border-slate-300 transition-all"
                 >
                   <!-- Message Header with Role -->
-                  <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3">
-                      <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold" :class="getRoleBadgeClass(message.role)">
+                  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
+                    <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                      <span class="inline-block px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold" :class="getRoleBadgeClass(message.role)">
                         {{ message.role.toUpperCase() }}
                       </span>
-                      <span class="text-xs text-slate-500">Message {{ index + 1 }} / {{ currentRecord.messages?.length }}</span>
+                      <span class="text-xs text-slate-500">{{ index + 1 }}/{{ currentRecord.messages?.length }}</span>
                     </div>
                     <button
                       @click="deleteMessage(message.id)"
-                      class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium transition-colors"
+                      class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs sm:text-sm font-medium transition-colors w-full sm:w-auto"
                     >
                       🗑️ Xóa
                     </button>
                   </div>
 
                   <!-- Role Selection -->
-                  <div class="mb-4">
+                  <div class="mb-3 sm:mb-4">
                     <label class="block text-xs font-semibold text-slate-700 mb-2 uppercase">Role</label>
                     <select
                       :value="message.role"
                       @change="updateMessage(message.id, ($event.target as HTMLSelectElement).value, message.content)"
-                      class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium"
+                      class="w-full px-3 sm:px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium text-sm"
                     >
                       <option value="system">system</option>
                       <option value="user">user</option>
@@ -135,7 +182,7 @@
                     <textarea
                       :value="message.content"
                       @input="updateMessage(message.id, message.role, ($event.target as HTMLTextAreaElement).value)"
-                      class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm min-h-32 max-h-48 resize-none"
+                      class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-xs sm:text-sm min-h-24 sm:min-h-32 max-h-96 resize-y"
                       placeholder="Nhập nội dung message..."
                     />
                   </div>
@@ -143,12 +190,12 @@
               </template>
             </div>
 
-            <div class="mt-6 pt-6 border-t border-slate-200">
+            <div class="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-slate-200">
                 <button
                 @click="saveChanges"
-                class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors flex items-center justify-center gap-2"
+                class="w-full px-4 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
                 Lưu Thay Đổi
@@ -191,9 +238,9 @@
           </div>
         </div>
 
-        <!-- JSON Preview (Right Sidebar) -->
+        <!-- JSON Preview (Bottom) -->
         <div class="col-span-1">
-          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm sticky top-28">
+          <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm">
             <h3 class="text-lg font-bold text-slate-800 mb-4">JSON Preview</h3>
             
             <!-- Validation Status -->
@@ -208,8 +255,8 @@
             </div>
 
             <!-- JSON Display -->
-            <div class="json-viewer max-h-96">
-              <pre class="text-xs">{{ JSON.stringify(currentRecord.data, null, 2) }}</pre>
+            <div class="json-viewer max-h-64 overflow-y-auto border border-slate-200 rounded-lg p-4 bg-slate-50">
+              <pre class="text-xs whitespace-pre-wrap break-words">{{ JSON.stringify(currentRecord.data, null, 2) }}</pre>
             </div>
 
             <!-- Stats -->
@@ -277,6 +324,15 @@ const jumpToIndex = computed({
   }
 })
 
+const windowWidth = ref(0)
+
+const displayFileName = computed(() => {
+  const maxLength = windowWidth.value < 1200 ? 20 : 40
+  return fileName.value.length > maxLength 
+    ? fileName.value.substring(0, maxLength) + '...' 
+    : fileName.value
+})
+
 const getRoleBadgeClass = (role: string) => {
   const classes: Record<string, string> = {
     system: 'bg-purple-100 text-purple-800',
@@ -327,7 +383,20 @@ watch(() => currentRecord.value?.id, () => {
 
 // Initialize on mount
 onMounted(() => {
-  // Component ready
+  // Set initial window width
+  windowWidth.value = typeof window !== 'undefined' ? window.innerWidth : 0
+  
+  // Listen to window resize
+  const handleResize = () => {
+    windowWidth.value = window.innerWidth
+  }
+  
+  window.addEventListener('resize', handleResize)
+  
+  // Cleanup
+  return () => {
+    window.removeEventListener('resize', handleResize)
+  }
 })
 </script>
 
